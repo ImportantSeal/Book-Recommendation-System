@@ -6,7 +6,7 @@ import numpy as np
 import pickle
 import os
 
-# Välimuistitetaan pickle-tiedostojen lataus
+# Välimuistitetaan pickle tiedostojen lataus
 @st.cache_data(show_spinner=True)
 def load_pickle(file_path):
     if os.path.exists(file_path):
@@ -17,23 +17,23 @@ def load_pickle(file_path):
         st.error(f"File not found: {file_path}")
         return None
 
-# Ladataan pickle-tiedostot (päivitä polut tarvittaessa)
+# ladataan pickle-tiedostot
 popular = load_pickle('popular.pkl')
 pt = load_pickle('pt.pkl')
 master_table = load_pickle('master_table.pkl')
 similarity_scores = load_pickle('similarity_scores.pkl')
 
-# Jos jokin tiedosto puuttuu, lopetetaan sovellus
+# Jos joku tiedosto puuttuu, lopetetaan sovellus
 if popular is None or pt is None or master_table is None or similarity_scores is None:
     st.stop()
 
-# Collaborative Filtering -suositusfunktio, jossa on lisätty filtterit
+# collaborative filtering suositusfunktio, jossa on lisätty filtterit
 def recommend_cf_filtered(book_name, min_rating=0.0, min_total=0):
     if book_name not in pt.index:
         return None
-    # Haetaan haetun kirjan indeksi pivot-taulukosta
+    # Haetaan haetun kirjan indeksi pivot taulukosta
     index = np.where(pt.index == book_name)[0][0]
-    # Lasketaan cosine-similariteetit ja valitaan enintään 10 lähintä naapuria (pois lukien itse kirja)
+    # lasketaan cosine-similariteetit ja valitaan enintään 10 lähintä naapuria (miinus lukien itse kirja)
     similar_items = sorted(
         list(enumerate(similarity_scores[index])), 
         key=lambda x: x[1], 
@@ -62,10 +62,10 @@ def recommend_cf_filtered(book_name, min_rating=0.0, min_total=0):
             break
     return recommendations
 
-# Streamlit käyttöliittymä
-st.title("📚 Book Recommendation System")
+# streamlit
+st.title("Book Recommendation System")
 
-# Sivupalkissa käyttäjä valitsee suosittelutavan (Author Based on poistettu)
+# sivupalkissa käyttäjä valitsee suosittelutavan 
 option = st.sidebar.selectbox("Select Recommendation Type:", 
                               ("Popularity Based", "Collaborative Filtering"))
 
@@ -73,7 +73,7 @@ if option == "Popularity Based":
     st.header("Top Popular Books")
     st.write("These books have received the highest ratings and a large number of reviews.")
     
-    # Näytetään suosituimmat kirjat ruudukossa (5 kirjaa per rivi)
+    # suosituimmat kirjat näkyy ruudukossa
     num_books = popular.shape[0]
     for i in range(0, num_books, 5):
         cols = st.columns(5)
@@ -91,11 +91,11 @@ elif option == "Collaborative Filtering":
     st.header("Book Recommendations via Collaborative Filtering")
     st.write("Select a book from the dropdown to see similar recommendations. Adjust the filters below to refine the results.")
     
-    # Käytetään pivot-taulukon indeksejä (kirjojen nimiä)
+    # käytetään pivot-taulukon indeksejä aka kirjojen nimiä
     book_list = pt.index.tolist()
     selected_book = st.selectbox("Select a Book:", book_list)
     
-    # Filtterit: average rating 0-6 ja total ratings 0-500
+    # filtterit: average rating 0-6 ja total ratings 0-500
     st.sidebar.markdown("### Filter Recommendations")
     min_rating = st.sidebar.slider("Minimum Average Rating", min_value=0.0, max_value=6.0, value=0.0, step=0.1)
     min_total_ratings = st.sidebar.slider("Minimum Total Ratings", min_value=0, max_value=500, value=0, step=10)
