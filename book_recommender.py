@@ -63,14 +63,14 @@ def recommend_cf_filtered(book_name, min_rating=0.0, min_total=0):
     return recommendations
 
 # streamlit
-st.title("Book Recommendation System")
+st.title("StoryFinder")
 
 # sivupalkissa käyttäjä valitsee suosittelutavan 
 option = st.sidebar.selectbox("Select Recommendation Type:", 
                               ("Popularity Based", "Collaborative Filtering"))
 
 if option == "Popularity Based":
-    st.header("Top Popular Books")
+    st.header("Popular Books")
     st.write("These books have received the highest ratings and a large number of reviews.")
     
     # suosituimmat kirjat näkyy ruudukossa
